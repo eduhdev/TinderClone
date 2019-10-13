@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const mongooseKey = require("../credentials/universal_key.json").key;
+const cors = require("cors");
 
 const routes = require("./routes");
 
@@ -14,7 +15,8 @@ mongoose.connect(
   }
 );
 
-server.use(express.json);
+server.use(cors());
+server.use(express.json());
 server.use(routes);
 
 server.listen(3333);
