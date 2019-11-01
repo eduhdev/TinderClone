@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { AsyncStorage } from "react-native";
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -9,9 +10,31 @@ import {
   Platform
 } from "react-native";
 
+import api from "../services/api";
+
 import logo from "../../assets/logo.png";
 
-export default function pages() {
+export default function Login({ navigation }) {
+  const [user, setUser] = useState("");
+
+  useEffect(() => {
+    AsyncStorage.getItem("user").then(user => {
+      if (user) {
+        navigation.navigate("Main", user);
+      }
+    });
+  });
+
+  async function handleLogin() {
+    const { data: response } = await api.post("/devs", { username: user });
+
+    const { _id } = response;
+
+    await AsyncStorage.setItem("user", _id);
+
+    navigation.navigate("Main", { _id });
+  }
+
   return (
     <KeyboardAvoidingView
       behavior="padding"
@@ -25,9 +48,11 @@ export default function pages() {
         placeholderTextColor="#999"
         autoCorrect={false}
         style={styles.input}
+        value={user}
+        onChangeText={setUser}
       />
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>SignIn</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
