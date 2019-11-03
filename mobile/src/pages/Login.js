@@ -20,19 +20,21 @@ export default function Login({ navigation }) {
   useEffect(() => {
     AsyncStorage.getItem("user").then(user => {
       if (user) {
-        navigation.navigate("Main", user);
+        navigation.navigate("Main", { user });
       }
     });
   });
 
   async function handleLogin() {
-    const { data: response } = await api.post("/devs", { username: user });
+    const { data: response } = await api.post("/devs", {
+      username: user.toLowerCase()
+    });
 
     const { _id } = response;
 
     await AsyncStorage.setItem("user", _id);
 
-    navigation.navigate("Main", { _id });
+    navigation.navigate("Main", { user: _id });
   }
 
   return (
